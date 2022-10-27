@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include <iterator>
 
@@ -161,18 +162,8 @@ namespace KHAS {
             , head_set.data()));
         push(delimiter('-'));
 
-
-        //format(FormatStruct<std::string>{ head_set.length() + power_, "i", "p", "B", head_set.data(), TypeFormat::isHead });
-
         for (size_t i{}, ie{ (2ull << (power_ - 1)) }; i != ie; ++i) {
             auto cg{ codeGray(i) };
-            /*format(FormatStruct<std::string>{
-                    head_set.length() + power_
-                    , std::to_string(i)
-                    , std::to_string(definifedElementToAddOrRemove(i))
-                    , toBinary(cg)
-                    , printSet(base_set_, cg)
-                    , TypeFormat::isBody });*/
             push(stringGeneration(' '
                 , std::to_string(i)
                 , std::to_string(definifedElementToAddOrRemove(i))

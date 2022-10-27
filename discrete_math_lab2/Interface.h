@@ -12,19 +12,9 @@ namespace KHAS {
         using Type = size_t;
 
 
-        template <typename TString, typename = std::enable_if_t<std::is_convertible_v<TString, std::string>>>
-        struct FormatStruct {
-            size_t width_third;
-            TString first;
-            TString second;
-            TString third;
-            TString fourth;
-            TypeFormat is_head;
-        };
-
     private:
 
-        template <typename TString, typename = std::enable_if_t<std::is_convertible_v<TString, FormatStruct<std::string>>>>
+        template <typename TString, typename = std::enable_if_t<std::is_convertible_v<TString, std::string>>>
         inline void format(TString&& str) const noexcept;
 
         void selectPower() noexcept;
@@ -61,5 +51,3 @@ namespace KHAS {
     };
 
 }
-
-#include "Interface.hpp"
