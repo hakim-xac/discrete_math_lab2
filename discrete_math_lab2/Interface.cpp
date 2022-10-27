@@ -11,41 +11,13 @@ namespace KHAS {
     void Interface::loop()
     {
         system("cls");
-        printHeader();
+        printHeader();             
 
 
-        /////////////
-        
-        constexpr size_t width{ 4 };
-        std::string_view head_set{ "множества" };
+        selectPower();
+        initSet();
+        tablePrinting();
 
-
-        auto power{ selectPower() };
-        auto base{ initSet(power) };
-
-
-        format(FormatStruct<std::string>{ width, power, head_set.length() + power, "i", "p", "B", head_set.data(), TypeFormat::isHead });
-
-        for (size_t i{}, ie{ (2ull << (power - 1)) }; i != ie; ++i) {
-            auto cg{ codeGray(i) };
-            format(FormatStruct<std::string>{
-                width
-                    , power
-                    , head_set.length() + power
-                    , std::to_string(i)
-                    , std::to_string(definifedElementToAddOrRemove(i))
-                    , toBinary(cg)
-                    , printSet(base, cg)
-                    , TypeFormat::isBody });
-        }
-        
-        
-        
-        ///////////////////
-
-
-            
-        printMenu();
         
         push(delimiter('-'));
         push(stringGeneration(' ', "Выход из программы выполнен!"));
@@ -61,52 +33,80 @@ namespace KHAS {
     }
 
 
-    size_t Interface::selectPower() const noexcept {
-        std::cout << "Введите мощность множества: (число)\n";
+    void Interface::selectPower() noexcept {
+
+        push(delimiter('-'));
+        push(stringGeneration(' ', "Введите мощность множества: (число)"));
+        push(delimiter('-'));
+        flush();
+
         int64_t n;
         while (!(std::cin >> n) || n < 0) {
-            std::cout << "Ошибка ввода! Повторите ввод!\n";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            push(delimiter('-'));
+            push(stringGeneration(' ', "Ошибка ввода! Повторите ввод!"));
+            push(delimiter('-'));
+            flush();
         }
-        return n;
+        power_ = n;
     }
 
 
-    std::vector<char> Interface::initSet(size_t power) const noexcept {
+    void Interface::initSet() noexcept {
 
         std::unordered_set<char> uset;
-        uset.reserve(power);
+        uset.reserve(power_);
 
-        std::cout << "Всего элементов: " << power << "\n";
+        push(delimiter('-'));
+        push(stringGeneration(' ', "Всего элементов: " + std::to_string(power_)));
+        push(delimiter('-'));
+        flush();
+
         char n;
-        for (size_t i{}, ie{ power }; i != ie;) {
-            std::cout << "Введите элемент номер " << i + 1 << "\n";
-            if (std::cin >> n && isValidityElements(n)) {
+        char left{'a'};
+        char right{'z'};
+
+        for (size_t i{}, ie{ power_ }; i != ie;) {
+
+            push(delimiter('-'));
+            push(stringGeneration(' ', "Введите элемент номер " + std::to_string(i + 1)
+                , "диапазон: [" + std::string(1, left) + ".." + std::string(1, right) + "]"));
+            push(delimiter('-'));
+            flush();
+
+            if (std::cin >> n && isClamp(n, left, right)) {
                 if (uset.find(n) == uset.end()) {
                     ++i;
                     uset.emplace(n);
-                    std::cout << "Вы ввели элемент: " << n << "\n";
+                    push(delimiter('-'));
+                    push(stringGeneration(' ', "Вы ввели элемент: " + std::string(1, n)));
+                    push(delimiter('-'));
+
                 }
-                else std::cout << "Ошибка ввода! Данный элемент уже существует! Введите другой!\n";
+                else {
+                    push(delimiter('-'));
+                    push(stringGeneration(' ', "Ошибка ввода! Данный элемент уже существует! Введите другой!"));
+                    push(delimiter('-'));
+                }
             }
-            else std::cout << "Ошибка ввода! Повторите ввод элемента!\n";
+            else {
+                push(delimiter('-'));
+                push(stringGeneration(' ', "Ошибка ввода!Повторите ввод элемента!"));
+                push(delimiter('-'));
+            }
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            flush();
         }
 
-        std::vector<char> result;
-        result.reserve(uset.size());
+        base_set_.clear();
+        base_set_.reserve(uset.size());
 
-        std::copy(uset.begin(), uset.end(), std::back_inserter(result));
-        std::sort(result.begin(), result.end());
+        std::copy(uset.begin(), uset.end(), std::back_inserter(base_set_));
+        std::sort(base_set_.begin(), base_set_.end());
 
-        return result;
-    }
-
-
-    bool Interface::isValidityElements(char c) const noexcept {
-        return std::tolower(c) >= 'a' && std::tolower(c) <= 'z';
     }
 
 
@@ -115,9 +115,13 @@ namespace KHAS {
     }
 
     std::string Interface::toBinary(size_t n) const noexcept {
-        std::string r;
-        for (; n; n >>= 1) r = (n & 1 ? "1" : "0") + r;
-        return r;
+
+        std::string str;
+        for (; n; n >>= 1) str = (n & 1 ? "1" : "0") + str;
+
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(power_) << str;
+        return ss.str();
     }
 
     size_t Interface::definifedElementToAddOrRemove(size_t number) const noexcept {
@@ -139,5 +143,42 @@ namespace KHAS {
         }
         std::move(tmp.rbegin(), tmp.rend(), std::back_inserter(result));
         return "{" + result + "}";
+    }
+
+    void Interface::tablePrinting() noexcept
+    {
+        push(delimiter('='));
+        push(stringGeneration(' ', "Вывод таблицы"));
+        push(delimiter('-'));
+        flush();
+
+        std::string_view head_set{ "множества" };
+
+        push(stringGeneration(' '
+            , "i"
+            , "p"
+            , "B"
+            , head_set.data()));
+        push(delimiter('-'));
+
+
+        //format(FormatStruct<std::string>{ head_set.length() + power_, "i", "p", "B", head_set.data(), TypeFormat::isHead });
+
+        for (size_t i{}, ie{ (2ull << (power_ - 1)) }; i != ie; ++i) {
+            auto cg{ codeGray(i) };
+            /*format(FormatStruct<std::string>{
+                    head_set.length() + power_
+                    , std::to_string(i)
+                    , std::to_string(definifedElementToAddOrRemove(i))
+                    , toBinary(cg)
+                    , printSet(base_set_, cg)
+                    , TypeFormat::isBody });*/
+            push(stringGeneration(' '
+                , std::to_string(i)
+                , std::to_string(definifedElementToAddOrRemove(i))
+                , toBinary(cg)
+                , printSet(base_set_, cg)));
+        }
+        flush();
     }
 }

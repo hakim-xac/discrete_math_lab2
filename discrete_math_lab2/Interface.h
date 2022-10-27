@@ -14,8 +14,6 @@ namespace KHAS {
 
         template <typename TString, typename = std::enable_if_t<std::is_convertible_v<TString, std::string>>>
         struct FormatStruct {
-            size_t width_first;
-            size_t width_second;
             size_t width_third;
             TString first;
             TString second;
@@ -29,11 +27,9 @@ namespace KHAS {
         template <typename TString, typename = std::enable_if_t<std::is_convertible_v<TString, FormatStruct<std::string>>>>
         inline void format(TString&& str) const noexcept;
 
-        size_t selectPower() const noexcept;
+        void selectPower() noexcept;
 
-        std::vector<char> initSet(size_t power) const noexcept;
-
-        bool isValidityElements(char c) const noexcept;
+        void initSet() noexcept;
 
         size_t codeGray(size_t n) const noexcept;
 
@@ -43,7 +39,7 @@ namespace KHAS {
 
         std::string printSet(const std::vector<char>& umap, size_t code_gray) const noexcept;
 
-
+        void tablePrinting() noexcept;
 
     public:
         void loop() override;
@@ -53,10 +49,15 @@ namespace KHAS {
         // first:   size_t          table_width_    | not default
         // second:  std::ostream&   out_            | default: std::cout
         Interface(std::size_t table_width, std::ostream& out = std::cout)
-            : CommonInterface(table_width, out) {};
+            : CommonInterface(table_width, out) 
+            , power_()
+            , base_set_() {};
 
     private:
 
+        const size_t general_width_{ 4 };
+        size_t power_;
+        std::vector<char> base_set_;
     };
 
 }
