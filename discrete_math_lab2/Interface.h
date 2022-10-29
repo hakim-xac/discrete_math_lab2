@@ -44,8 +44,6 @@ namespace KHAS {
             , base_set_() {};
 
     private:
-
-        const size_t general_width_{ 4 };
         size_t power_;
         std::vector<char> base_set_;
     };

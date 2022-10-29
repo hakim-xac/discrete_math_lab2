@@ -8,20 +8,6 @@
 namespace KHAS {
     class CommonInterface
     {
-
-    private:    // section for fields
-
-        //* stream buffer */
-        std::ostream& cout_;
-
-        //* temprory buffer */
-        std::stringstream out_buffer_;
-
-        //* output table width */
-        const std::size_t table_width_;
-        const std::size_t min_table_width_{ 100 };
-
-
     protected:
 
         //* reset to output */
@@ -48,7 +34,7 @@ namespace KHAS {
 
         //* generates a string of length table_width_ from the given arguments */
         template <typename ... TString>
-        std::string stringGeneration(char aggregate, TString&& ... rest_str);
+        std::string stringGeneration(char aggregate, TypeGenerateString tgs, TString&& ... rest_str);
 
         //*  */
         template <typename TInput>
@@ -68,7 +54,6 @@ namespace KHAS {
 
 
 
-
     public: // public section
 
         CommonInterface() = delete;
@@ -81,6 +66,22 @@ namespace KHAS {
 
         //* main program loop */
         virtual void loop() = 0;
+
+
+    protected:
+        const size_t general_width_{ 8 };
+
+    private:    // section for fields
+
+        //* stream buffer */
+        std::ostream& cout_;
+
+        //* temprory buffer */
+        std::stringstream out_buffer_;
+
+        //* output table width */
+        const std::size_t table_width_;
+        const std::size_t min_table_width_{ 100 };
     };
 }
 

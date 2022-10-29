@@ -9,20 +9,19 @@ namespace KHAS {
     void CommonInterface::printHeader()
     {
         push(delimiter('='));
-        push(stringGeneration(' ', "Дисциплина:", "", "", "", "", "Дискретная математика"));
-        push(stringGeneration(' ', "Лабораторня работа:", "", "", "", "", "", "№ 2"));
+        push(stringGeneration(' ', TypeGenerateString::Justifly, "Дисциплина:", std::string(50, ' '), "Дискретная математика"));
+        push(stringGeneration(' ', TypeGenerateString::Justifly, "Лабораторня работа:", std::string(50, ' '), "№ 2"));
         push(delimiter('-'));
-        push(stringGeneration(' ', "Тема:", "", "", "", "", "", "Генерация подмножеств"));
-        push(stringGeneration(' ', "Выполнил студент:", "", "", "", "", "Хакимов А.С."));
+        push(stringGeneration(' ', TypeGenerateString::Justifly, "Тема:", std::string(56, ' '), "Генерация подмножеств"));
+        push(stringGeneration(' ', TypeGenerateString::Justifly, "Выполнил студент:", std::string(52, ' '), "Хакимов А.С."));
         push(delimiter('='));
-
         flush();
     }
 
     void CommonInterface::printUnknown()
     {
         push(delimiter('-'));
-        push(stringGeneration(' ', "Ошибка ввода! Повторите ввод!"));
+        push(stringGeneration(' ', TypeGenerateString::Center, "Ошибка ввода! Повторите ввод!"));
         push(delimiter('-'));
         flush();
     }

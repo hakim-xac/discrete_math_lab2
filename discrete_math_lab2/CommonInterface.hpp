@@ -16,38 +16,39 @@ namespace KHAS {
     }
 
     template<typename ...TString>
-    inline std::string CommonInterface::stringGeneration(char aggregate, TString&& ... str)
+    inline std::string CommonInterface::stringGeneration(char aggregate, TypeGenerateString tgs, TString&& ... str)
     {
         static_assert(sizeof...(str) > 0);
+
         std::initializer_list forward_str{ std::string(std::forward<TString>(str))... };
-
-        std::size_t length_forward_str{ std::accumulate(
-            forward_str.begin()
-            , forward_str.end()
-            , std::size_t{}
-            , [](auto lhs, auto&& rhs) {
-                return lhs + rhs.size();
-            }) };
-
-        assert(length_forward_str > 0);
-
-        const std::size_t numerator{ table_width_ - length_forward_str };
-        const std::size_t denominator{ sizeof...(str) + 1 };
-        const std::size_t delimiter_size{ numerator / denominator + 1 };
-        auto tmp{ std::string(delimiter_size, aggregate) };
 
         std::string result{ std::accumulate(
             forward_str.begin()
             , forward_str.end()
-            , tmp
-            , [&tmp](auto&& lhs, auto&& rhs) {
-                auto result{ lhs + rhs + tmp };
+            , std::string{}
+            , [](auto&& lhs, auto&& rhs) {
+                auto result{ lhs + rhs };
                 return result;
             }) };
-        assert(result.size() <= table_width_ + denominator - numerator % denominator);
-        result.resize(result.size() - denominator + numerator % denominator);
-        result.shrink_to_fit();
-        result.front() = result.back() = '#';
+        
+        size_t diff_len{};
+        switch (tgs)
+        {
+        case KHAS::TypeGenerateString::Center:
+            diff_len = (table_width_ - result.size()) >> 1;
+            result = "#" + std::string(diff_len, aggregate) + result;
+            result += std::string(table_width_ - result.size() - 1, aggregate) + "#";
+            break;
+        case KHAS::TypeGenerateString::Justifly:
+            diff_len = general_width_;
+            result = "#" + std::string(diff_len, aggregate) + result;
+
+            assert(table_width_ - diff_len - 1 >= result.size());   // assert
+            result += std::string(table_width_ - result.size() - diff_len - 1, aggregate) + std::string(diff_len, aggregate) + "#";
+            break;
+        }
+
+        assert(result.size() == table_width_);  // assert
         return result;
     }
 
@@ -67,7 +68,7 @@ namespace KHAS {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
             if (is_good) return { tmp, true };
-            return { T(), false};
+            return { T(), false };
         }
 
         while (awiv == ActionWithInputValue::LoopIsError && std::cin.fail()) {

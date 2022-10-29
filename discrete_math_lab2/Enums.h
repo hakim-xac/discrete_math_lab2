@@ -11,4 +11,9 @@ namespace KHAS {
 		isHead, isBody
 	};
 
+	enum class TypeGenerateString {
+		Center
+		, Justifly
+	};
+
 }

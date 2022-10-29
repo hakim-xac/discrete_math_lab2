@@ -21,7 +21,7 @@ namespace KHAS {
 
         
         push(delimiter('-'));
-        push(stringGeneration(' ', "Выход из программы выполнен!"));
+        push(stringGeneration(' ', TypeGenerateString::Center, "Выход из программы выполнен!"));
         push(delimiter('-'));
         flush();
     }
@@ -37,16 +37,16 @@ namespace KHAS {
     void Interface::selectPower() noexcept {
 
         push(delimiter('-'));
-        push(stringGeneration(' ', "Введите мощность множества: (число)"));
+        push(stringGeneration(' ', TypeGenerateString::Center, "Введите мощность множества: (число)"));
         push(delimiter('-'));
         flush();
 
         int64_t n;
-        while (!(std::cin >> n) || n < 0) {
+        while (!(std::cin >> n) || n < 0 || !isClamp(n, 1, 26)) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             push(delimiter('-'));
-            push(stringGeneration(' ', "Ошибка ввода! Повторите ввод!"));
+            push(stringGeneration(' ', TypeGenerateString::Center, "Ошибка ввода! Повторите ввод!"));
             push(delimiter('-'));
             flush();
         }
@@ -60,7 +60,7 @@ namespace KHAS {
         uset.reserve(power_);
 
         push(delimiter('-'));
-        push(stringGeneration(' ', "Всего элементов: " + std::to_string(power_)));
+        push(stringGeneration(' ', TypeGenerateString::Center, "Всего элементов: " + std::to_string(power_)));
         push(delimiter('-'));
         flush();
 
@@ -71,7 +71,7 @@ namespace KHAS {
         for (size_t i{}, ie{ power_ }; i != ie;) {
 
             push(delimiter('-'));
-            push(stringGeneration(' ', "Введите элемент номер " + std::to_string(i + 1)
+            push(stringGeneration(' ', TypeGenerateString::Center, "Введите элемент номер " + std::to_string(i + 1)
                 , "диапазон: [" + std::string(1, left) + ".." + std::string(1, right) + "]"));
             push(delimiter('-'));
             flush();
@@ -81,19 +81,19 @@ namespace KHAS {
                     ++i;
                     uset.emplace(n);
                     push(delimiter('-'));
-                    push(stringGeneration(' ', "Вы ввели элемент: " + std::string(1, n)));
+                    push(stringGeneration(' ', TypeGenerateString::Center, "Вы ввели элемент: " + std::string(1, n)));
                     push(delimiter('-'));
 
                 }
                 else {
                     push(delimiter('-'));
-                    push(stringGeneration(' ', "Ошибка ввода! Данный элемент уже существует! Введите другой!"));
+                    push(stringGeneration(' ', TypeGenerateString::Center, "Ошибка ввода! Данный элемент уже существует! Введите другой!"));
                     push(delimiter('-'));
                 }
             }
             else {
                 push(delimiter('-'));
-                push(stringGeneration(' ', "Ошибка ввода!Повторите ввод элемента!"));
+                push(stringGeneration(' ', TypeGenerateString::Center, "Ошибка ввода!Повторите ввод элемента!"));
                 push(delimiter('-'));
             }
             std::cin.clear();
@@ -149,25 +149,27 @@ namespace KHAS {
     void Interface::tablePrinting() noexcept
     {
         push(delimiter('='));
-        push(stringGeneration(' ', "Вывод таблицы"));
+        push(stringGeneration(' ', TypeGenerateString::Center, "Вывод таблицы"));
         push(delimiter('-'));
         flush();
 
         std::string_view head_set{ "множества" };
-
+        std::string general_width(general_width_, ' ');
         push(stringGeneration(' '
-            , "i"
-            , "p"
-            , "B"
+            , TypeGenerateString::Justifly
+            , "i", general_width
+            , "p", general_width
+            , "B", general_width
             , head_set.data()));
         push(delimiter('-'));
 
         for (size_t i{}, ie{ (2ull << (power_ - 1)) }; i != ie; ++i) {
             auto cg{ codeGray(i) };
             push(stringGeneration(' '
-                , std::to_string(i)
-                , std::to_string(definifedElementToAddOrRemove(i))
-                , toBinary(cg)
+                , TypeGenerateString::Justifly
+                , std::to_string(i), general_width
+                , std::to_string(definifedElementToAddOrRemove(i)), general_width
+                , toBinary(cg), general_width
                 , printSet(base_set_, cg)));
         }
         flush();
